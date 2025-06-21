@@ -26,117 +26,33 @@
   </div>
 
   <div class="buttons colors">
-    <button style="color:#000" onclick="apply('§0')">Black</button>
-    <button style="color:#00A" onclick="apply('§1')">Dark Blue</button>
-    <button style="color:#0A0" onclick="apply('§2')">Dark Green</button>
-    <button style="color:#0AA" onclick="apply('§3')">Dark Aqua</button>
-    <button style="color:#A00" onclick="apply('§4')">Dark Red</button>
-    <button style="color:#A0A" onclick="apply('§5')">Dark Purple</button>
-    <button style="color:#FA0" onclick="apply('§6')">Gold</button>
-    <button style="color:#AAA" onclick="apply('§7')">Gray</button>
-    <button style="color:#555" onclick="apply('§8')">Dark Gray</button>
-    <button style="color:#55F" onclick="apply('§9')">Blue</button>
-    <button style="color:#5F5" onclick="apply('§a')">Green</button>
-    <button style="color:#5FF" onclick="apply('§b')">Aqua</button>
-    <button style="color:#F55" onclick="apply('§c')">Red</button>
-    <button style="color:#F5F" onclick="apply('§d')">Light Purple</button>
-    <button style="color:#FF5" onclick="apply('§e')">Yellow</button>
-    <button style="color:#FFF" onclick="apply('§f')">White</button>
-    <button style="color:#FC0" onclick="apply('§g')">Minecoin Gold</button>
+    <button class="color-btn color-0" data-code="§0">Black</button>
+    <button class="color-btn color-1" data-code="§1">Dark Blue</button>
+    <button class="color-btn color-2" data-code="§2">Dark Green</button>
+    <button class="color-btn color-3" data-code="§3">Dark Aqua</button>
+    <button class="color-btn color-4" data-code="§4">Dark Red</button>
+    <button class="color-btn color-5" data-code="§5">Dark Purple</button>
+    <button class="color-btn color-6" data-code="§6">Gold</button>
+    <button class="color-btn color-7" data-code="§7">Gray</button>
+    <button class="color-btn color-8" data-code="§8">Dark Gray</button>
+    <button class="color-btn color-9" data-code="§9">Blue</button>
+    <button class="color-btn color-a" data-code="§a">Green</button>
+    <button class="color-btn color-b" data-code="§b">Aqua</button>
+    <button class="color-btn color-c" data-code="§c">Red</button>
+    <button class="color-btn color-d" data-code="§d">Light Purple</button>
+    <button class="color-btn color-e" data-code="§e">Yellow</button>
+    <button class="color-btn color-f" data-code="§f">White</button>
+    <button class="color-btn color-g" data-code="§g">Minecoin Gold</button>
   </div>
 
   <div class="buttons formatting">
-    <button onclick="apply('§l')"><span class="bold">Bold</span></button>
-    <button onclick="apply('§o')"><span class="italic">Italic</span></button>
-    <button onclick="apply('§n')"><span class="underline">Underline</span></button>
-    <button onclick="apply('§m')"><span class="strikethrough">Strikethrough</span></button>
-    <button onclick="apply('§r')">Reset</button>
+    <button class="format-btn" data-code="§l"><span class="bold">Bold</span></button>
+    <button class="format-btn" data-code="§o"><span class="italic">Italic</span></button>
+    <button class="format-btn" data-code="§n"><span class="underline">Underline</span></button>
+    <button class="format-btn" data-code="§m"><span class="strikethrough">Strikethrough</span></button>
+    <button class="format-btn" data-code="§r">Reset</button>
   </div>
 
-<script>
-  const editor = document.getElementById('editor');
-  const preview = document.getElementById('preview');
-  const copyBtn = document.querySelector('.copy-btn');
-
-  const map = {
-    '0':'color-0','1':'color-1','2':'color-2','3':'color-3',
-    '4':'color-4','5':'color-5','6':'color-6','7':'color-7',
-    '8':'color-8','9':'color-9','a':'color-a','b':'color-b',
-    'c':'color-c','d':'color-d','e':'color-e','f':'color-f',
-    'g':'color-g', // Minecoin Gold
-    'l':'bold','o':'italic','n':'underline','m':'strikethrough'
-  };
-
-  function apply(code) {
-    const s = editor.selectionStart;
-    const e = editor.selectionEnd;
-    const t = editor.value;
-    editor.value = t.slice(0,s) + code + t.slice(s,e) + t.slice(e);
-    editor.focus();
-    editor.selectionStart = s + code.length;
-    editor.selectionEnd = e + code.length;
-    updatePreview();
-  }
-
-  function escapeHTML(str) {
-    return str.replace(/&/g, "&amp;")
-              .replace(/</g, "&lt;")
-              .replace(/>/g, "&gt;")
-              .replace(/"/g, "&quot;")
-              .replace(/'/g, "&#39;");
-  }
-
-  function updatePreview() {
-    const raw = editor.value;
-    let result = '';
-    let styles = ['color-f'];  // default white color
-    let currentText = '';
-
-    const colorClasses = Object.values(map).filter(c => c.startsWith('color-'));
-
-    function flush() {
-      if (currentText) {
-        result += `<span class="${styles.join(' ')}">${escapeHTML(currentText)}</span>`;
-        currentText = '';
-      }
-    }
-
-    for(let i = 0; i < raw.length; i++) {
-      if(raw[i] === '§' && i + 1 < raw.length) {
-        flush();
-        const code = raw[++i].toLowerCase();
-
-        if(code === 'r') {
-          styles = ['color-f']; // reset to white by default, clearing styles
-        } else if(map[code]) {
-          if(code >= '0' && code <= '9' || (code >= 'a' && code <= 'g')) {
-            styles = styles.filter(s => !colorClasses.includes(s));
-            styles.push(map[code]);
-          } else {
-            if(!styles.includes(map[code])) {
-              styles.push(map[code]);
-            }
-          }
-        }
-        continue;
-      }
-      currentText += raw[i];
-    }
-    flush();
-
-    preview.innerHTML = result;
-  }
-
-  editor.addEventListener('input', updatePreview);
-  window.addEventListener('load', updatePreview);
-
-  copyBtn.addEventListener('click', () => {
-    editor.select();
-    document.execCommand('copy');
-    copyBtn.textContent = 'Copied!';
-    setTimeout(() => copyBtn.textContent = 'Copy', 1500);
-  });
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>

@@ -216,6 +216,14 @@
     updatePreview();
   }
 
+  function escapeHTML(str) {
+    return str.replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;")
+              .replace(/"/g, "&quot;")
+              .replace(/'/g, "&#39;");
+  }
+
   function updatePreview() {
     const raw = editor.value;
     let result = '';
@@ -226,7 +234,7 @@
 
     function flush() {
       if (currentText) {
-        result += `<span class="${styles.join(' ')}">${currentText}</span>`;
+        result += `<span class="${styles.join(' ')}">${escapeHTML(currentText)}</span>`;
         currentText = '';
       }
     }
@@ -237,7 +245,7 @@
         const code = raw[++i].toLowerCase();
 
         if(code === 'r') {
-          styles = ['color-f']; // reset to white by default
+          styles = ['color-f']; // reset to white by default, clearing styles
         } else if(map[code]) {
           if(code >= '0' && code <= '9' || (code >= 'a' && code <= 'g')) {
             styles = styles.filter(s => !colorClasses.includes(s));

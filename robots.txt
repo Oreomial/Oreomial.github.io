@@ -1,1 +1,7 @@
+User-agent: *
+Disallow:
 
+User-agent: *
+Allow: /
+
+Sitemap: https://https://oreomial.github.io/sitemap.xml

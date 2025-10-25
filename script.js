@@ -1,89 +1,58 @@
-const editor = document.getElementById('editor');
-const preview = document.getElementById('preview');
-const copyBtn = document.querySelector('.copy-btn');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Minecraft Bedrock Text Generator</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; object-src 'none'; base-uri 'none'">
+<meta name="google-site-verification" content="9NwSut6tjp25ldDyFLrfCZYu85ZMyr2K9Ua9Olg8xmQ" />
+<meta name="description" content="Free online Minecraft Bedrock Edition text generator with live preview. Easily format your signs and chat with colors, bold, italic and more!">
+<meta name="keywords" content="Minecraft Bedrock text generator, Minecraft Bedrock color text generator, Minecraft text formatting, Minecraft sign colors, live preview Minecraft text">
+<meta name="robots" content="index, follow">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-const map = {
-  '0':'color-0','1':'color-1','2':'color-2','3':'color-3',
-  '4':'color-4','5':'color-5','6':'color-6','7':'color-7',
-  '8':'color-8','9':'color-9','a':'color-a','b':'color-b',
-  'c':'color-c','d':'color-d','e':'color-e','f':'color-f',
-  'g':'color-g', // Minecoin Gold
-  'l':'bold','o':'italic','n':'underline','m':'strikethrough'
-};
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css">
 
-function apply(code) {
-  const s = editor.selectionStart;
-  const e = editor.selectionEnd;
-  const t = editor.value;
-  editor.value = t.slice(0,s) + code + t.slice(s,e) + t.slice(e);
-  editor.focus();
-  editor.selectionStart = s + code.length;
-  editor.selectionEnd = e + code.length;
-  updatePreview();
-}
+</head>
+<body>
 
-function escapeHTML(str) {
-  return str.replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#39;");
-}
+  <div class="container">
+    <div class="editor-container">
+      <textarea id="editor" spellcheck="false" aria-label="Minecraft Bedrock text editor">§aHello §cMinecraft §lWorld §gMinecoin Gold</textarea>
+      <button class="copy-btn" title="Copy text" aria-label="Copy text from editor">Copy</button>
+    </div>
 
-function updatePreview() {
-  const raw = editor.value;
-  let result = '';
-  let styles = ['color-f'];  // default white color
-  let currentText = '';
+    <div id="preview" aria-label="Live preview of formatted text"></div>
+  </div>
 
-  const colorClasses = Object.values(map).filter(c => c.startsWith('color-'));
+  <div class="buttons colors">
+    <button class="color-btn color-0" data-code="§0">Black</button>
+    <button class="color-btn color-1" data-code="§1">Dark Blue</button>
+    <button class="color-btn color-2" data-code="§2">Dark Green</button>
+    <button class="color-btn color-3" data-code="§3">Dark Aqua</button>
+    <button class="color-btn color-4" data-code="§4">Dark Red</button>
+    <button class="color-btn color-5" data-code="§5">Dark Purple</button>
+    <button class="color-btn color-6" data-code="§6">Gold</button>
+    <button class="color-btn color-7" data-code="§7">Gray</button>
+    <button class="color-btn color-8" data-code="§8">Dark Gray</button>
+    <button class="color-btn color-9" data-code="§9">Blue</button>
+    <button class="color-btn color-a" data-code="§a">Green</button>
+    <button class="color-btn color-b" data-code="§b">Aqua</button>
+    <button class="color-btn color-c" data-code="§c">Red</button>
+    <button class="color-btn color-d" data-code="§d">Light Purple</button>
+    <button class="color-btn color-e" data-code="§e">Yellow</button>
+    <button class="color-btn color-f" data-code="§f">White</button>
+    <button class="color-btn color-g" data-code="§g">Minecoin Gold</button>
+  </div>
 
-  function flush() {
-    if (currentText) {
-      result += `<span class="${styles.join(' ')}">${escapeHTML(currentText)}</span>`;
-      currentText = '';
-    }
-  }
+  <div class="buttons formatting">
+    <button class="format-btn" data-code="§l"><span class="bold">Bold</span></button>
+    <button class="format-btn" data-code="§o"><span class="italic">Italic</span></button>
+    <button class="format-btn" data-code="§n"><span class="underline">Underline</span></button>
+    <button class="format-btn" data-code="§m"><span class="strikethrough">Strikethrough</span></button>
+    <button class="format-btn" data-code="§r">Reset</button>
+  </div>
 
-  for(let i = 0; i < raw.length; i++) {
-    if(raw[i] === '§' && i + 1 < raw.length) {
-      flush();
-      const code = raw[++i].toLowerCase();
-
-      if(code === 'r') {
-        styles = ['color-f']; // reset to white by default, clearing styles
-      } else if(map[code]) {
-        if(code >= '0' && code <= '9' || (code >= 'a' && code <= 'g')) {
-          styles = styles.filter(s => !colorClasses.includes(s));
-          styles.push(map[code]);
-        } else {
-          if(!styles.includes(map[code])) {
-            styles.push(map[code]);
-          }
-        }
-      }
-      continue;
-    }
-    currentText += raw[i];
-  }
-  flush();
-
-  preview.innerHTML = result;
-}
-
-editor.addEventListener('input', updatePreview);
-window.addEventListener('load', updatePreview);
-
-copyBtn.addEventListener('click', () => {
-  editor.select();
-  document.execCommand('copy');
-  copyBtn.textContent = 'Copied!';
-  setTimeout(() => copyBtn.textContent = 'Copy', 1500);
-});
-
-// Attach event listeners for buttons (colors and formatting)
-document.querySelectorAll('.color-btn, .format-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    apply(btn.dataset.code);
-  });
-});
+<script src="script.js"></script>
+</body>
+</html>

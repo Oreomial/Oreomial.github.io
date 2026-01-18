@@ -7,7 +7,7 @@ const map = {
   '4':'color-4','5':'color-5','6':'color-6','7':'color-7',
   '8':'color-8','9':'color-9','a':'color-a','b':'color-b',
   'c':'color-c','d':'color-d','e':'color-e','f':'color-f',
-  'g':'color-g', // Minecoin Gold
+  'g':'color-g',
   'l':'bold','o':'italic','n':'underline','m':'strikethrough'
 };
 
@@ -33,7 +33,7 @@ function escapeHTML(str) {
 function updatePreview() {
   const raw = editor.value;
   let result = '';
-  let styles = ['color-f'];  // default white color
+  let styles = ['color-f'];
   let currentText = '';
 
   const colorClasses = Object.values(map).filter(c => c.startsWith('color-'));
@@ -51,7 +51,7 @@ function updatePreview() {
       const code = raw[++i].toLowerCase();
 
       if(code === 'r') {
-        styles = ['color-f']; // reset to white by default, clearing styles
+        styles = ['color-f'];
       } else if(map[code]) {
         if(code >= '0' && code <= '9' || (code >= 'a' && code <= 'g')) {
           styles = styles.filter(s => !colorClasses.includes(s));
@@ -81,9 +81,9 @@ copyBtn.addEventListener('click', () => {
   setTimeout(() => copyBtn.textContent = 'Copy', 1500);
 });
 
-// Attach event listeners for buttons (colors and formatting)
 document.querySelectorAll('.color-btn, .format-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     apply(btn.dataset.code);
   });
 });
+
